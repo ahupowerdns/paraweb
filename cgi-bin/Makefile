@@ -5,7 +5,7 @@ INCLUDEPATH=../
 -include *.d
 
 
-CPPFLAGS = -MMD -O -g -Wall $(CGIOPTIONS) -DCONFIGFILE=\"${CONFIGFILE}\"
+CPPFLAGS += -MMD -O -g -Wall $(CGIOPTIONS) -DCONFIGFILE=\"${CONFIGFILE}\"
 
 clean:
 	rm -f *.o *~ mailer changer

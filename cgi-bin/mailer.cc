@@ -13,11 +13,15 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/property_tree/ini_parser.hpp>
+#include <boost/algorithm/string.hpp>
 #include <signal.h>
 #include "socketio.hh"
 
 using namespace boost::property_tree;
+using namespace boost::algorithm;
 using namespace std;
+
+string g_emaildestination;
 
 string getsmtpline(BufferedSocketIO& bsi)
 {
@@ -52,9 +56,6 @@ void doEmail(ptree& pt)
     exit(EXIT_FAILURE);
   }
 
-  ptree ptconf;
-  ini_parser::read_ini(CONFIGFILE, ptconf);
-  string emaildestination = pt.get<string>("paraweb.emaildestination");
 
   signal (SIGPIPE, SIG_IGN);
   struct sockaddr_in remote;
@@ -75,15 +76,15 @@ void doEmail(ptree& pt)
 
     bsi.put("EHLO dan\r\n");
     line = getsmtpline(bsi);
-    bsi.put("MAIL From:<"+emaildestination+">\r\n");
+    bsi.put("MAIL From:<"+g_emaildestination+">\r\n");
     line = getsmtpline(bsi);
-    bsi.put("RCPT To:<"+emaildestination+">\r\n");
+    bsi.put("RCPT To:<"+g_emaildestination+">\r\n");
     line = getsmtpline(bsi);
     bsi.put("DATA\r\n");
     line = getsmtpline(bsi);
 
-    bsi.put("From: "+emaildestination+"\r\n");
-    bsi.put("To: "+emaildestination+"\r\n");
+    bsi.put("From: "+g_emaildestination+"\r\n");
+    bsi.put("To: "+g_emaildestination+"\r\n");
     bsi.put("Cc: "+email+"\r\n");
     bsi.put("Subject: PowerDNS Information Request: "+subject+"\r\n\r\n");
     // insert date, message-id
@@ -112,7 +113,7 @@ void doEmail(ptree& pt)
     int res = atoi(line.c_str());
 
     if(res == 250)
-      status = "Thank you, your message has been sent to "+emaildestination;
+      status = "Thank you, your message has been sent to "+g_emaildestination;
     else {
       syslog(LOG_ERR, "Failed to send message: proper exit=%s", line.c_str()); 
       status = "There was an error sending your message";
@@ -123,7 +124,7 @@ void doEmail(ptree& pt)
   }
   cout << "{\"status\": \""+status+"\"}" <<endl;
 
-  syslog(LOG_WARNING, "Requested to send out email to %s for %s, status: %s", emaildestination.c_str(), 
+  syslog(LOG_WARNING, "Requested to send out email to %s for %s, status: %s", g_emaildestination.c_str(), 
 	 email.c_str(), status.c_str());  
 }
 
@@ -135,6 +136,11 @@ try
   rlim.rlim_max=50000000;
   setrlimit(RLIMIT_AS, &rlim); 
   openlog("mailer", 0, LOG_MAIL);
+
+  ptree ptconf;
+  ini_parser::read_ini(CONFIGFILE, ptconf);
+  g_emaildestination = ptconf.get<string>("paraweb.emaildestination");
+  trim_if(g_emaildestination, is_any_of("\" "));
 
   ptree pt;
   read_json(cin, pt);

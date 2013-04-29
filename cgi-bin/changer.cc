@@ -199,14 +199,14 @@ try
   string cookies = getenv("HTTP_COOKIE") ?: "";
   string uri = getenv("REQUEST_URI");
   string queryString = getenv("QUERY_STRING") ?: "";
-  syslog(LOG_WARNING, "Changer launched: uri %s, xsrf %s, cookies %s, query %s", 
+  syslog(LOG_WARNING, "Changer launched: uri '%s', xsrf '%s', cookies '%s', query '%s'", 
 	 uri.c_str(),  getenv("HTTP_X_REQUESTED_WITH"),  cookies.c_str(), queryString.c_str());
 
   bool haveAuth = false;
  
   map<string, string> parameters = getParameters(queryString);
 
-  if(cookies.find("paraweb="+g_config.cookie+";") != string::npos) 
+  if(cookies.find("paraweb="+g_config.cookie) != string::npos) 
     haveAuth = true;
   else if(parameters.count("password"))  {
     if(!strcmp(crypt(parameters["password"].c_str(), g_config.pwhash.c_str()), 
@@ -233,12 +233,14 @@ try
     action = parameters["action"];
 
   if(!haveAuth && action=="login") {
+    syslog(LOG_WARNING, "Have INVALID logon");
     cout << "Content-type: application/json" << endl<<endl;
     cout << " { \"status\": \"Incorrect credentials\" }" <<endl;
     return 0;
   }
 
   if(haveAuth && action == "login") {
+    syslog(LOG_WARNING, "Have valid logon, welcome");
     cout << "Content-type: application/json" << endl<<endl;
     cout << " { \"status\": \"Ok\" }" <<endl;
     return 0;
