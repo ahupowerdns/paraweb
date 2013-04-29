@@ -21,11 +21,11 @@ The following files control layout:
    This sets up most of the CSS, fonts etc.
  + *.md  
    This is your own contribution
- + endcontent.html
+ + endcontent.html  
    This provides the closing HTML for the content section
  + *menu.html  
    Sidebar menu
- + footer.html
+ + footer.html  
    Bottom of your site 
  + end.html  
    HTML closing statements
@@ -33,29 +33,26 @@ The following files control layout:
 Meanwhile, 'website.conf' determines which pages to build, and what menus to apply to your content.
 'website.conf.local' finally has details on where you want to publish your site.
 
-#### Locally
--------
+To hook up the contact form and editing, install cgi-bin/{changer,mailer} to http://yourwebsite/cgi-bin/, and
+make sure they work. 
+
+Website.conf.local configures where the cgi-bin scripts read their configuration from.
+
+#### Editing locally
 From a git checkout you can run 'make publish' which will build your website and rsync it to the live webserver.
 
 However, if multiple people do this, changes might be overwritten on the live webserver. Rsync does not 'merge'.
 
-So, the route to publishing flows via git. Edit the markdown or html, run make, check that it looks good locally, 
-and don't run make publish, but do git commit, git push.
-
-Cgi-bin gateway
----------------
+#### Cgi-bin gateway
 There is a cgi-bin gateway that powers the contact form. 
 There is a second version of the gateway that allows access to the 'staged' version and triggers rebuilds.
 
-The trigger
------------
-The git server sends out a trigger to the stager cgi-bin gateway when it receives
-the push.  This causes a 'git pull' on the trigger, which runs 'make
-publish', rebuilds the website, and publishes it.
+The cgi-bin scripts read a .ini configuration file from the full filename configured
+in website.conf.local. A sample is in the distribution.
 
-The stager
-----------
-This is a version of the website that can be edited via the browser. It too gets rebuilt on a trigger.
+#### Staged version of the website
+This is a version of the website that can be edited via the browser. It too gets rebuilt on a trigger, and will
+merge git changes.
 
 In addition to allowing editing, this version of the website has buttons:
 'diff' 'revert' 'push'.
@@ -66,20 +63,3 @@ In addition to allowing editing, this version of the website has buttons:
 
 The stage version of the website is hosted by the 'changer' cgi-bin script.
 
-Summarizing
------------
-There is a place, say, /var/www.powerdns.com/ that hosts the 'live' website.
-It has a cgi-bin directory with two binaries in there, 'mailer' and 'changer'. Mailer
-does nothing but email.
-
-'changer' also serves up a staged version of the website to users with a password, so:
-http://www.powerdns.com/cgi-bin/changer/index.html
-
-
-Mechanics
----------
-cgi-bin gateway does everything, and it needs to know about:
-	Where the 'live' local checkout lives
-	Where the stage local checkout lives
-
-It gets this configuration from 'website.conf'.

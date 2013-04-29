@@ -1,0 +1,8 @@
+[paraweb]
+	emaildestination = "somewhere@somewhere.conf"
+	stagelocal = /home/ahu/content/stagelocal/
+	livelocal = /home/ahu/content/livelocal/
+	pwhash = "$1$v4xsfz7Ug1M9zXbeZR0"
+	baseurl = ""
+	cookie = "randomstring"
+
