@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8" />
+
+  <!-- Set the viewport width to device width for mobile -->
+  <meta name="viewport" content="width=device-width" />
+
+  <title>Welcome to PowerDNS</title>
+
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/foundation.min.css">
+  <link rel="stylesheet" href="css/ie8-grid-foundation-4.css">
+  <link href='//fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  <link href='//fonts.googleapis.com/css?family=Merriweather' rel='stylesheet' type='text/css'>
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  <style>
+  ul { margin-left: 2em; }
+  body { font-family: 'Open Sans', serif; }
+  h1 { font-family: 'Merriweather', serif; font-weight: normal; }
+  h2 { font-family: 'Merriweather', serif; font-weight: normal; }
+  h3 { font-family: 'Merriweather', serif; font-weight: normal; }  
+  h4 { font-family: 'Merriweather', serif; font-weight: normal; }  
+  h5 { font-family: 'Merriweather', serif; font-weight: normal; }  
+  h6 { font-family: 'Merriweather', serif; font-weight: normal; }  
+  
+     a, .side-nav li a { color: #0959c2; }
+   a:hover, .side-nav li a:hover { color: #3B8EC8; } 
+   .external-links { display: inline; }
+   
+   input.gsc-search-button, input.gsc-search-button:hover,
+   input.gsc-search-button:focus {
+   background-image: inherit;
+   box-sizing: content-box;
+   }
+   
+   textarea {
+     height: auto;
+   }
+     
+  </style>
+  <script src="js/vendor/custom.modernizr.js"></script>
+
+  <script>
+    document.write('<script src=js/vendor/' +
+      ('__proto__' in {} ? 'zepto' : 'jquery.min') +
+        '.js><\/script>')
+  </script>
+  <script>
+      $().ready(function() { 
+    		$("#content").dblclick(function(event){ 
+	    		var filename = window.location.href.match(/.*\/(.*)$/)[1];
+    			window.location = "cgi-bin/changer/"+filename;
+    		});
+    	});
+  </script>                  
+</head>
+<body>
+
+
+<!--   a, .side-nav li a { color: #E38000; }
+   a:hover, .side-nav li a:hover { color: #E3A000; } -->
+<!-- Header and Nav -->
+  
+  <div class="row">
+    <div class="large-3 columns">
+      <h1><a href="index.html"><img id="logo" src="img/powerdns-logo-220px.png"/></a></h1>
+    </div>
+    <div class="large-9 columns">
+    <p></p>
+      <ul class="inline-list right">
+        <li><a href="opensource.html">Open Source</a></li>
+        <li><a href="software.html">Software</a></li>
+        <li><a href="support-services-consulting.html">Support, services, consulting</a></li>
+        <li><a href="training.html">Training</a></li>
+        <li><a href="resources.html">Resources</a></li>        
+      </ul>
+    </div>
+  </div>
+  
+  <!-- End Header and Nav -->
+  
+  
+  <div class="row">    
+    
+    <!-- Main Content Section -->
+    <!-- This has been source ordered to come first in the markup (and on small devices) but to be to the right of the nav on larger screens -->
+    <div class="large-9 push-3 columns">
+    <div id="editorbuttons"></div>
+    <div id="content">
+    

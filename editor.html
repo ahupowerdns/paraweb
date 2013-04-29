@@ -1,0 +1,108 @@
+  <script src="epiceditor/js/epiceditor.min.js"></script>
+  <script src="jsdiff/diff.js"></script>
+
+  
+  <script>
+  	var theEditor;
+  	var oldContent;
+  	var newContent='';
+  	var fname;
+  	$().ready(function() { 
+  		$("#content").off('dblclick');
+		$("#content").dblclick(function(event){ 
+			$("#editorbuttons").html('<a class="button" onclick="javascript:showDiff()">Save</a>&nbsp;<a class="button" onclick="javascript:gitDiff()">Git Diff</a>&nbsp;<a class="button" onclick="javascript:gitReset()">Git Reset</a>&nbsp;<a class="button" href="'+window.location.href+'">Cancel</a>&nbsp;<a class="button" onclick="javascript:doLogout()">Logout</a>');
+			var opts={}; 
+			opts["container"]="content";
+			theEditor = new EpicEditor(opts);
+			theEditor.load();
+			$("#content").height("500px");
+			theEditor.reflow();
+			fname = window.location.href.split("/").slice(-1)[0];
+			if(fname=="stage" || fname=="" || fname=="index.html")
+				fname="index.content";
+			else
+				fname=fname.replace(".html",".md");
+				
+			$.ajax({url: fname, cache: false, success: function(response) { 
+				oldContent=response;
+				theEditor.importFile(fname, response);}			
+			});
+
+		});
+  	});
+
+
+	function doLogout()
+	{
+		document.cookie="paraweb=secure; expires=Sat, 16 May 1980 18:40:22 GMT;path=/";
+		window.location = "../..";
+	}
+  	
+  	function showDiff()
+  	{
+		$("#editorbuttons").html('<a class="button" onclick="javascript:saveEditor()">Save</a>&nbsp;<a class="button" href="'+window.location.href+'">Cancel</a>');  	
+  		newContent=theEditor.exportFile();
+  		var diff = JsDiff.createPatch(fname, oldContent, newContent);
+  		$("#content").html('<pre style="font-size:0.7em;" id="diff"></pre>');
+  		$("#diff").text(diff);
+  	}
+
+  	function saveEditor() 
+  	{
+  		$("#editorbuttons").html("");
+  		var work={};
+  		work.action="patch";
+  		work.diff = JsDiff.createPatch(fname, oldContent, newContent);
+  		work.fname = fname; 
+
+                $.ajax({
+                	url: "cgi-bin/changer", 
+                	dataType: "json",
+                        cache: false, 
+                        type: "post", 
+                        data: JSON.stringify(work), 
+                        success: function()
+                        {
+                        	window.location.reload(true);
+                        }});
+                                                                                                                                                                                                                                                
+  	}
+
+	function gitDiff()
+	{
+		$("#editorbuttons").html('<a class="button" onclick="javascript:gitCommit()">Git Commit</a>&nbsp;<a class="button" onclick="javascript:gitReset()">Git Reset</a>&nbsp;<a class="button" href="'+window.location.href+'">Cancel</a><br><input	size=80	id="commit-message"></input><p></p>');  	
+		var work={};
+		work.action="diff";
+		$.post("cgi-bin/changer", JSON.stringify(work), function(data) {
+			$("#content").html('<pre style="font-size:0.7em;" id="diff"></pre>');
+			$("#diff").text(data.diff);
+		}, "json");
+	}
+  	
+
+	function gitCommit()
+	{
+		var work={};
+		work.action="commit";
+		work.message=$("#commit-message").val();
+		$("#content").html("Committing...");
+		$.post("cgi-bin/changer", JSON.stringify(work), function(data) {
+			window.location.reload(true);
+		}, "json");
+	}
+
+
+	function gitReset()
+	{
+		var work={};
+		work.action="reset";
+		$("#content").html("Resetting...");		
+		$.post("cgi-bin/changer", JSON.stringify(work), function(data) {
+			window.location.reload(true);
+		}, "json");
+	}
+
+
+
+
+  </script>
