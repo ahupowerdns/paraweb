@@ -1,20 +1,22 @@
 
 ###### Part of paraweb. Configure your website in website.conf please! ############
 
-all: ${PAGES} sitemap.txt status-404.html
+ALLPAGES = ${PAGES} sitemap.txt status-404.html sitemap.html login.html
+
+all: ${ALLPAGES} 
 
 -include website.conf
 
-sitemap.md: makesitemap $(filter-out sitemap.html status-404.html, $(PAGES))
-	./makesitemap $(filter-out sitemap.html status-404.html, $(PAGES)) > sitemap.md
+sitemap.md: makesitemap $(filter-out sitemap.html status-404.html, $(ALLPAGES))
+	./makesitemap $(filter-out sitemap.html status-404.html, $(ALLPAGES)) > sitemap.md
 
-sitemap.txt: $(filter-out login.html sitemap.html status-404.html, $(PAGES))
-	for name in $(filter-out sitemap.html status-404.html, $(PAGES)) ; do echo ${BASEURL}$$name; done > $@
+sitemap.txt: $(filter-out login.html sitemap.html status-404.html, $(ALLPAGES))
+	for name in $(filter-out sitemap.html status-404.html, $(ALLPAGES)) ; do echo ${BASEURL}$$name; done > $@
 	
 clean: 
-	rm -f ${PAGES} sitemap.md 404.html *~ 
+	rm -f ${ALLPAGES} sitemap.md 404.html *~ 
 
-todistribute = ${PAGES} status-404.html 404.html css js img resources favicon.ico sitemap.txt ${PROOFFILES} 
+todistribute = ${ALLPAGES} status-404.html 404.html css js img resources favicon.ico sitemap.txt ${PROOFFILES} 
 stagedistribute = *.md index.content epiceditor jsdiff
 
 ifeq ($(WWWTYPE),live)
