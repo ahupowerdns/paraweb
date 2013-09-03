@@ -1,0 +1,8 @@
+#!/bin/bash
+
+echo "### All pages"
+
+for a in $((for b in $@ ; do echo $b ; done) | sort)
+do
+        echo  " + [" $(grep '<h3>' $a | sed 's/<[^>]*>//g') "]($a)"
+done | LC_ALL=C sort  -b
